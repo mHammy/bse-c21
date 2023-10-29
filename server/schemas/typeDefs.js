@@ -20,6 +20,10 @@ const typeDefs = gql`
     title: String!
     image: String
     link: String
+    publishedDate: String
+    publisher: String
+    pageCount: Int
+    genres: [String]
   }
 
   # Define the Auth type which might be for authentication responses
@@ -36,6 +40,10 @@ const typeDefs = gql`
     title: String!
     image: String
     link: String
+    publishedDate: String
+    publisher: String
+    pageCount: Int
+    genres: [String]
   }
 
   # Define the root Query type

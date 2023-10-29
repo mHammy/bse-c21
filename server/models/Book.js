@@ -1,6 +1,5 @@
 const { Schema } = require('mongoose');
 
-// This is a subdocument schema, it won't become its own model but we'll use it as the schema for the User's `savedBooks` array in User.js
 const bookSchema = new Schema({
   authors: [
     {
@@ -11,21 +10,47 @@ const bookSchema = new Schema({
     type: String,
     required: true,
   },
-  // saved book id from GoogleBooks
   bookId: {
     type: String,
     required: true,
+    unique: true,
   },
   image: {
     type: String,
+    validate: {
+      validator: function(v) {
+        return /^(http|https):\/\/[^ "]+$/.test(v);
+      },
+      message: props => `${props.value} is not a valid URL!`
+    },
   },
   link: {
     type: String,
+    validate: {
+      validator: function(v) {
+        return /^(http|https):\/\/[^ "]+$/.test(v);
+      },
+      message: props => `${props.value} is not a valid URL!`
+    },
   },
   title: {
     type: String,
     required: true,
   },
+  publishedDate: {
+    type: Date,
+  },
+  publisher: {
+    type: String,
+  },
+  pageCount: {
+    type: Number,
+  },
+  genres: [
+    {
+      type: String,
+    },
+  ],
 });
 
 module.exports = bookSchema;
