@@ -1,3 +1,4 @@
+require ('dotenv').config();
 const express = require('express');
 const path = require('path');
 const db = require('./config/connection');
@@ -7,7 +8,8 @@ const { authMiddleware } = require('./utils/auth');
 const routes = require('./routes');
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
+const secret = process.env.JWT_SECRET || 'defaultSecret';
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
