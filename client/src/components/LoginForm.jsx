@@ -1,14 +1,21 @@
-// see SignupForm.js for comments
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Form, Button, Alert } from 'react-bootstrap';
-
-import { loginUser } from '../utils/API';
+import { useMutation } from '@apollo/client';  
 import Auth from '../utils/auth';
+import LOGIN_USER from '../mutations'; 
 
 const LoginForm = () => {
   const [userFormData, setUserFormData] = useState({ email: '', password: '' });
-  const [validated] = useState(false);
+  const [validated, setValidated] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
+  const [login, { error }] = useMutation(LOGIN_USER);
+
+  useEffect(() => {
+    if (error) {
+      setShowAlert(true);
+      setTimeout(() => setShowAlert(false), 3000); 
+    }
+  }, [error]);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -17,31 +24,21 @@ const LoginForm = () => {
 
   const handleFormSubmit = async (event) => {
     event.preventDefault();
-
-    // check if form has everything (as per react-bootstrap docs)
     const form = event.currentTarget;
     if (form.checkValidity() === false) {
-      event.preventDefault();
-      event.stopPropagation();
+      setValidated(true);
+      return;
     }
 
     try {
-      const response = await loginUser(userFormData);
-
-      if (!response.ok) {
-        throw new Error('something went wrong!');
-      }
-
-      const { token, user } = await response.json();
-      console.log(user);
-      Auth.login(token);
+      const { data } = await login({ variables: { ...userFormData } });
+      Auth.login(data.login.token);
     } catch (err) {
       console.error(err);
       setShowAlert(true);
     }
 
     setUserFormData({
-      username: '',
       email: '',
       password: '',
     });
@@ -54,11 +51,12 @@ const LoginForm = () => {
           Something went wrong with your login credentials!
         </Alert>
         <Form.Group className='mb-3'>
-          <Form.Label htmlFor='email'>Email</Form.Label>
+          <Form.Label htmlFor='email-input'>Email</Form.Label>
           <Form.Control
             type='text'
             placeholder='Your email'
             name='email'
+            id='email-input' // Matching ID for label
             onChange={handleInputChange}
             value={userFormData.email}
             required
@@ -67,11 +65,12 @@ const LoginForm = () => {
         </Form.Group>
 
         <Form.Group className='mb-3'>
-          <Form.Label htmlFor='password'>Password</Form.Label>
+          <Form.Label htmlFor='password-input'>Password</Form.Label>
           <Form.Control
             type='password'
             placeholder='Your password'
             name='password'
+            id='password-input' // Matching ID for label
             onChange={handleInputChange}
             value={userFormData.password}
             required
