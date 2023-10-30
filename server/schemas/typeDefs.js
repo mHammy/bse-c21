@@ -1,4 +1,4 @@
-# Inside typeDefs.js
+// Inside typeDefs.js
 
 const { gql } = require('apollo-server-express');
 
